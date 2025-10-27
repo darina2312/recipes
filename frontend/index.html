@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Рецепты</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🥣 Мои рецепты</h1>
+        <button id="addBtn">+ Добавить рецепт</button>
+    </header>
+
+    <section id="search">
+        <input type="text" id="searchInput" placeholder="Поиск по названию или описанию...">
+        <button id="searchBtn">Искать</button>
+    </section>
+
+    <section id="recipes"></section>
+
+    <!-- Модальное окно добавления -->
+    <div id="modal" class="hidden">
+        <div class="modal-content">
+            <h2>Новый рецепт</h2>
+            <label>Название</label>
+            <input id="titleInput">
+
+            <label>Описание</label>
+            <textarea id="descInput"></textarea>
+
+            <label>Ингредиенты (через запятую)</label>
+            <input id="ingredientsInput">
+
+            <label>Шаги приготовления</label>
+            <textarea id="stepsInput"></textarea>
+
+            <label>Теги (через запятую)</label>
+            <input id="tagsInput">
+
+            <div class="actions">
+                <button id="saveBtn">Сохранить</button>
+                <button id="cancelBtn">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
