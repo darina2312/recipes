@@ -8,15 +8,18 @@ async function loadRecipes(query = "") {
         return;
     }
     for (const r of recipes) {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-            <h3>${r.title}</h3>
-            <p>${r.description || ""}</p>
-            <small>${r.created_at}</small>
-        `;
-        container.appendChild(card);
+    // создаём ссылку-карточку, которая ведёт на страницу рецепта
+    const card = document.createElement("a");
+    card.className = "card card-link";
+    card.href = `recipe.html?id=${r.id}`;   // переход на рецепт по id
+    card.innerHTML = `
+        <h3>${r.title}</h3>
+        <p>${r.description || ""}</p>
+        <small>${r.created_at}</small>
+    `;
+    container.appendChild(card);
     }
+
 }
 
 document.getElementById("searchBtn").onclick = () => {

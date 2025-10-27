@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Рецепт</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .wrap { max-width: 920px; margin: 16px auto; padding: 0 12px }
+    .ing { margin: 8px 0 16px }
+    .ing li { margin: 2px 0 }
+    .topbar { display:flex; align-items:center; gap:12px; margin:12px 0 }
+    .back { color:#4CAF50; text-decoration:none }
+    select { padding:6px 8px; border-radius:8px; border:1px solid #ccc }
+    pre { white-space: pre-wrap }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">← Назад к списку</a>
+    <h1 id="title">Загрузка…</h1>
+    <p id="desc"></p>
+
+    <div class="topbar">
+      <div><b>Базовые порции:</b> <span id="basePortions">—</span></div>
+      <label>Порции сейчас:
+        <select id="portionSelect"></select>
+      </label>
+      <small id="date"></small>
+    </div>
+
+    <h3>Ингредиенты</h3>
+    <ul class="ing" id="ingList"></ul>
+
+    <h3>Шаги</h3>
+    <pre id="steps"></pre>
+    <p id="tags"></p>
+  </div>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const id = qs.get("id");
+
+    if (!id) {
+      document.body.innerHTML = "<p>Не указан id рецепта.</p>";
+    } else {
+      loadRecipe(+id);
+    }
+
+    let recipe = null;
+    let currentPortions = null;
+
+    async function loadRecipe(rid) {
+      const res = await fetch(`/api/recipes/${rid}`);
+      if (!res.ok) {
+        document.body.innerHTML = "<p>Рецепт не найден.</p>";
+        return;
+      }
+      recipe = await res.json();
+
+      document.getElementById("title").textContent = recipe.title;
+      document.getElementById("desc").textContent = recipe.description || "";
+      document.getElementById("steps").textContent = recipe.steps || "";
+      document.getElementById("date").textContent = recipe.created_at || "";
+      document.getElementById("basePortions").textContent = recipe.portions || 1;
+      document.getElementById("tags").textContent = (recipe.tags||[]).map(t=>`#${t}`).join(" ");
+
+      // заполнить селектор порций (от 1 до 12)
+      const sel = document.getElementById("portionSelect");
+      sel.innerHTML = "";
+      const base = recipe.portions || 1;
+      for (let p of [1,2,3,4,5,6,8,10,12]) {
+        const opt = document.createElement("option");
+        opt.value = p;
+        opt.textContent = p;
+        if (p === base) opt.selected = true;
+        sel.appendChild(opt);
+      }
+      currentPortions = base;
+      sel.onchange = () => {
+        currentPortions = parseInt(sel.value,10);
+        renderIngredients();
+      };
+
+      renderIngredients();
+    }
+
+    function renderIngredients() {
+      const list = document.getElementById("ingList");
+      list.innerHTML = "";
+      const base = recipe.portions || 1;
+      const factor = currentPortions / base;
+
+      for (const ing of (recipe.ingredients||[])) {
+        // масштабирование
+        let amount = (ing.amount ?? 0) * factor;
+
+        // аккуратное округление: шт до 0.5, г/мл до 1, прочее до десятых
+        if (["шт"].includes((ing.unit||"").toLowerCase())) {
+          amount = Math.round(amount * 2) / 2;
+        } else if (["г","гр","мл"].includes((ing.unit||"").toLowerCase())) {
+          amount = Math.round(amount);
+        } else {
+          amount = Math.round(amount * 10) / 10;
+        }
+
+        const li = document.createElement("li");
+        const unit = ing.unit ? " " + ing.unit : "";
+        li.textContent = `${ing.name}: ${amount}${unit}`;
+        list.appendChild(li);
+      }
+    }
+  </script>
+</body>
+</html>
