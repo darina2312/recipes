@@ -105,5 +105,33 @@ def get_recipe(rid):
             return jsonify(r)
     return jsonify({"error": "Не найден"}), 404
 
+@app.route("/api/recipes/<int:rid>", methods=["DELETE"])
+def delete_recipe(rid):
+    """Удаление рецепта"""
+    with _lock:
+        data = load_data()
+        recipe_to_delete = None
+        
+        # ищем рецепт
+        for i, r in enumerate(data["recipes"]):
+            if r["id"] == rid:
+                recipe_to_delete = data["recipes"].pop(i)
+                break
+        
+        if not recipe_to_delete:
+            return jsonify({"error": "Не найден"}), 404
+        
+        # удаляем изображение если есть
+        if recipe_to_delete.get("image"):
+            image_path = os.path.join(os.path.dirname(__file__), "../frontend", recipe_to_delete["image"])
+            if os.path.exists(image_path):
+                try:
+                    os.remove(image_path)
+                except:
+                    pass  # игнорируем ошибки удаления файла
+        
+        save_data(data)
+        return jsonify({"status": "ok"})
+
 if __name__ == "__main__":
     app.run(debug=True)
