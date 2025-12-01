@@ -24,7 +24,10 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="back" href="/">← Назад к списку</a>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <a class="back" href="/">← Назад к списку</a>
+      <button id="deleteBtn" style="background: #C56A6A; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">🗑️ Удалить рецепт</button>
+    </div>
     <h1 id="title">Загрузка…</h1>
     <div id="recipeImage"></div>
     <p id="desc"></p>
@@ -129,6 +132,24 @@
         list.appendChild(li);
       }
     }
+
+    // удаление рецепта
+    document.getElementById("deleteBtn").onclick = async () => {
+      if (!confirm(`Вы уверены, что хотите удалить рецепт "${recipe.title}"? Это действие нельзя отменить.`)) {
+        return;
+      }
+      
+      const res = await fetch(`/api/recipes/${recipe.id}`, {
+        method: "DELETE"
+      });
+      
+      if (res.ok) {
+        alert("Рецепт удалён");
+        window.location.href = "/";
+      } else {
+        alert("Ошибка при удалении рецепта");
+      }
+    };
   </script>
 </body>
 </html>
