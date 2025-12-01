@@ -13,7 +13,9 @@ async function loadRecipes(query = "") {
         const card = document.createElement("a");
         card.className = "card card-link";
         card.href = `recipe.html?id=${r.id}`;
+        const imageHtml = r.image ? `<img src="${r.image}" alt="${r.title}" class="recipe-thumbnail">` : '';
         card.innerHTML = `
+            ${imageHtml}
             <h3>${r.title}</h3>
             <p>${r.description || ""}</p>
             <small>${r.created_at}</small>
@@ -60,6 +62,8 @@ function clearModal() {
     document.getElementById("descInput").value = "";
     document.getElementById("stepsInput").value = "";
     document.getElementById("tagsInput").value = "";
+    document.getElementById("imageInput").value = "";
+    document.getElementById("portionsInput").value = "2"; // сбрасываем на 2 порции
     const list = document.getElementById("ingredientsList");
     list.innerHTML = "";
     addIngredientRow(); // оставляем одну пустую строку
@@ -76,23 +80,31 @@ document.getElementById("cancelBtn").onclick = () =>
 // сохраняет новый рецепт
 document.getElementById("saveBtn").onclick = async () => {
     // собираем данные из формы
-    const newRecipe = {
-        title: document.getElementById("titleInput").value.trim(),
-        description: document.getElementById("descInput").value.trim(),
-        ingredients: Array.from(document.querySelectorAll('.ingredient-row')).map(row => ({
-            name: row.querySelector('.ing-name').value.trim(),
-            amount: parseFloat(row.querySelector('.ing-amount').value) || 0,
-            unit: row.querySelector('.ing-unit').value.trim()
-        })),
-        steps: document.getElementById("stepsInput").value.trim(),
-        tags: document.getElementById("tagsInput").value.split(",").map(s => s.trim())
-    };
+    const formData = new FormData();
+    formData.append("title", document.getElementById("titleInput").value.trim());
+    formData.append("description", document.getElementById("descInput").value.trim());
+    formData.append("steps", document.getElementById("stepsInput").value.trim());
+    formData.append("tags", document.getElementById("tagsInput").value);
+    formData.append("portions", document.getElementById("portionsInput").value);
+    
+    // собираем ингредиенты
+    const ingredients = Array.from(document.querySelectorAll('.ingredient-row')).map(row => ({
+        name: row.querySelector('.ing-name').value.trim(),
+        amount: parseFloat(row.querySelector('.ing-amount').value) || 0,
+        unit: row.querySelector('.ing-unit').value.trim()
+    })).filter(ing => ing.name); // убираем пустые
+    formData.append("ingredients", JSON.stringify(ingredients));
+    
+    // добавляем изображение если выбрано
+    const imageFile = document.getElementById("imageInput").files[0];
+    if (imageFile) {
+        formData.append("image", imageFile);
+    }
 
     // отправляем на сервер
     const res = await fetch("/api/recipes", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newRecipe)
+        body: formData
     });
 
     if (res.ok) {

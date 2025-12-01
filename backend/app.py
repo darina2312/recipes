@@ -1,10 +1,15 @@
 from flask import Flask, request, send_from_directory, jsonify
 import json, os, threading, time
+from werkzeug.utils import secure_filename
 
 # настройка Flask и пути к файлу с данными
 app = Flask(__name__, static_folder="../frontend", static_url_path="/")
 DATA_FILE = os.path.join(os.path.dirname(__file__), "../data/recipes.json")
+IMAGES_FOLDER = os.path.join(os.path.dirname(__file__), "../frontend/images")
 _lock = threading.Lock()  # для безопасности при записи в файл
+
+# создаём папку для изображений если её нет
+os.makedirs(IMAGES_FOLDER, exist_ok=True)
 
 def load_data():
     # если файла нет, создаём пустой
@@ -42,9 +47,45 @@ def get_recipes():
 @app.route("/api/recipes", methods=["POST"])
 def add_recipe():
     """Добавление нового рецепта"""
-    new = request.get_json()
-    if not new or not new.get("title"):
+    # получаем данные формы
+    title = request.form.get("title", "").strip()
+    if not title:
         return jsonify({"error": "Нет названия"}), 400
+    
+    # обрабатываем изображение если есть
+    image_path = None
+    if "image" in request.files:
+        file = request.files["image"]
+        if file.filename:
+            # сохраняем файл с безопасным именем
+            filename = secure_filename(file.filename)
+            # добавляем timestamp чтобы избежать конфликтов
+            timestamp = int(time.time() * 1000)
+            name, ext = os.path.splitext(filename)
+            filename = f"{name}_{timestamp}{ext}"
+            filepath = os.path.join(IMAGES_FOLDER, filename)
+            file.save(filepath)
+            image_path = f"images/{filename}"
+    
+    # собираем данные рецепта
+    new = {
+        "title": title,
+        "description": request.form.get("description", "").strip(),
+        "steps": request.form.get("steps", "").strip(),
+        "tags": [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()],
+        "portions": int(request.form.get("portions", 1)) if request.form.get("portions") else 1
+    }
+    
+    # обрабатываем ингредиенты из JSON строки
+    try:
+        ingredients_json = request.form.get("ingredients", "[]")
+        new["ingredients"] = json.loads(ingredients_json)
+    except:
+        new["ingredients"] = []
+    
+    # добавляем путь к изображению если есть
+    if image_path:
+        new["image"] = image_path
 
     # используем lock чтобы не было конфликтов при записи
     with _lock:

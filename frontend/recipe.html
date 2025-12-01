@@ -12,12 +12,21 @@
     .back { color:#6D9580; text-decoration:none }
     select { padding:6px 8px; border-radius:8px; border:1px solid #D1D7D0; background: #FFFFFF; color: #3E3E40; }
     pre { white-space: pre-wrap }
+    .recipe-image {
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 12px;
+      margin: 16px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <a class="back" href="/">← Назад к списку</a>
     <h1 id="title">Загрузка…</h1>
+    <div id="recipeImage"></div>
     <p id="desc"></p>
 
     <div class="topbar">
@@ -66,6 +75,14 @@
       document.getElementById("date").textContent = recipe.created_at || "";
       document.getElementById("basePortions").textContent = recipe.portions || 1;
       document.getElementById("tags").textContent = (recipe.tags||[]).map(t=>`#${t}`).join(" ");
+      
+      // показываем изображение если есть
+      const imageContainer = document.getElementById("recipeImage");
+      if (recipe.image) {
+        imageContainer.innerHTML = `<img src="${recipe.image}" alt="${recipe.title}" class="recipe-image">`;
+      } else {
+        imageContainer.innerHTML = '';
+      }
 
       // создаём список порций для выбора
       const sel = document.getElementById("portionSelect");

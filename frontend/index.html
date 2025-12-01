@@ -32,6 +32,23 @@
             <label>Описание</label>
             <textarea id="descInput" rows="3"></textarea>
 
+            <label>Фотография</label>
+            <input type="file" id="imageInput" accept="image/*">
+            <small style="display: block; color: #666; margin-top: 4px;">Можно загрузить изображение для рецепта</small>
+
+            <label>Количество порций</label>
+            <select id="portionsInput" style="width: 100%; padding: 10px 12px; border: 1px solid #D1D7D0; border-radius: 8px; background: #FFFFFF; color: #3E3E40; font-size: 14px; box-sizing: border-box;">
+                <option value="1">1 порция</option>
+                <option value="2" selected>2 порции</option>
+                <option value="3">3 порции</option>
+                <option value="4">4 порции</option>
+                <option value="5">5 порций</option>
+                <option value="6">6 порций</option>
+                <option value="8">8 порций</option>
+                <option value="10">10 порций</option>
+                <option value="12">12 порций</option>
+            </select>
+
             <label>Ингредиенты</label>
             <div id="ingredientsList">
                 <div class="ingredient-row">
