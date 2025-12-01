@@ -9,8 +9,8 @@
     .ing { margin: 8px 0 16px }
     .ing li { margin: 2px 0 }
     .topbar { display:flex; align-items:center; gap:12px; margin:12px 0 }
-    .back { color:#4CAF50; text-decoration:none }
-    select { padding:6px 8px; border-radius:8px; border:1px solid #ccc }
+    .back { color:#6D9580; text-decoration:none }
+    select { padding:6px 8px; border-radius:8px; border:1px solid #D1D7D0; background: #FFFFFF; color: #3E3E40; }
     pre { white-space: pre-wrap }
   </style>
 </head>
@@ -37,6 +37,7 @@
   </div>
 
   <script>
+    // получаем id рецепта из адресной строки
     const qs = new URLSearchParams(location.search);
     const id = qs.get("id");
 
@@ -49,6 +50,7 @@
     let recipe = null;
     let currentPortions = null;
 
+    // загружает рецепт с сервера и показывает на странице
     async function loadRecipe(rid) {
       const res = await fetch(`/api/recipes/${rid}`);
       if (!res.ok) {
@@ -57,6 +59,7 @@
       }
       recipe = await res.json();
 
+      // заполняем поля на странице
       document.getElementById("title").textContent = recipe.title;
       document.getElementById("desc").textContent = recipe.description || "";
       document.getElementById("steps").textContent = recipe.steps || "";
@@ -64,7 +67,7 @@
       document.getElementById("basePortions").textContent = recipe.portions || 1;
       document.getElementById("tags").textContent = (recipe.tags||[]).map(t=>`#${t}`).join(" ");
 
-      // заполнить селектор порций (от 1 до 12)
+      // создаём список порций для выбора
       const sel = document.getElementById("portionSelect");
       sel.innerHTML = "";
       const base = recipe.portions || 1;
@@ -78,29 +81,29 @@
       currentPortions = base;
       sel.onchange = () => {
         currentPortions = parseInt(sel.value,10);
-        renderIngredients();
+        renderIngredients(); // пересчитываем ингредиенты
       };
 
       renderIngredients();
     }
 
+    // показывает ингредиенты с учётом выбранного количества порций
     function renderIngredients() {
       const list = document.getElementById("ingList");
       list.innerHTML = "";
       const base = recipe.portions || 1;
-      const factor = currentPortions / base;
+      const factor = currentPortions / base; // коэффициент для пересчёта
 
       for (const ing of (recipe.ingredients||[])) {
-        // масштабирование
         let amount = (ing.amount ?? 0) * factor;
 
-        // аккуратное округление: шт до 0.5, г/мл до 1, прочее до десятых
+        // округляем в зависимости от единицы измерения
         if (["шт"].includes((ing.unit||"").toLowerCase())) {
-          amount = Math.round(amount * 2) / 2;
+          amount = Math.round(amount * 2) / 2; // до 0.5
         } else if (["г","гр","мл"].includes((ing.unit||"").toLowerCase())) {
-          amount = Math.round(amount);
+          amount = Math.round(amount); // до целого
         } else {
-          amount = Math.round(amount * 10) / 10;
+          amount = Math.round(amount * 10) / 10; // до десятых
         }
 
         const li = document.createElement("li");

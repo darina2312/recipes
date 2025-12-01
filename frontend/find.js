@@ -1,7 +1,9 @@
+// храним все рецепты и ингредиенты
 let allRecipes = [];
 let allIngredients = [];
 let filteredIngredients = [];
 
+// загружает все рецепты при открытии страницы
 async function loadAllRecipes() {
     const res = await fetch('/api/recipes');
     allRecipes = await res.json();
@@ -9,6 +11,7 @@ async function loadAllRecipes() {
     renderIngredients();
 }
 
+// собирает все уникальные ингредиенты из всех рецептов
 function extractIngredients() {
     const ingredientsSet = new Set();
     
@@ -16,7 +19,7 @@ function extractIngredients() {
         if (recipe.ingredients && Array.isArray(recipe.ingredients)) {
             for (const ing of recipe.ingredients) {
                 if (ing.name && ing.name.trim()) {
-                    // Нормализуем название ингредиента (приводим к нижнему регистру)
+                    // приводим к нижнему регистру чтобы не было дублей
                     const normalized = ing.name.trim().toLowerCase();
                     ingredientsSet.add(normalized);
                 }
@@ -24,7 +27,6 @@ function extractIngredients() {
         }
     }
     
-    // Преобразуем в массив и сортируем
     allIngredients = Array.from(ingredientsSet).sort();
     filteredIngredients = [...allIngredients];
 }
@@ -63,6 +65,7 @@ function getSelectedIngredients() {
     return Array.from(checkboxes).map(cb => cb.value.toLowerCase());
 }
 
+// ищет рецепты, которые можно приготовить из выбранных ингредиентов
 function findRecipes() {
     const selected = getSelectedIngredients();
     
@@ -73,31 +76,28 @@ function findRecipes() {
     
     const matchingRecipes = [];
     
+    // проверяем каждый рецепт
     for (const recipe of allRecipes) {
         if (!recipe.ingredients || !Array.isArray(recipe.ingredients)) {
             continue;
         }
         
-        // Получаем все ингредиенты рецепта (нормализованные)
         const recipeIngredients = recipe.ingredients
             .map(ing => ing.name ? ing.name.trim().toLowerCase() : '')
             .filter(ing => ing);
         
-        // Проверяем, есть ли все ингредиенты рецепта в выбранных
+        // рецепт подходит если все его ингредиенты есть в выбранных
         const hasAllIngredients = recipeIngredients.every(ing => selected.includes(ing));
         
         if (hasAllIngredients && recipeIngredients.length > 0) {
-            // Вычисляем процент покрытия (сколько ингредиентов рецепта есть в выбранных)
-            const coverage = (recipeIngredients.length / recipeIngredients.length) * 100;
             matchingRecipes.push({
                 recipe: recipe,
-                coverage: coverage,
                 ingredientCount: recipeIngredients.length
             });
         }
     }
     
-    // Сортируем по количеству ингредиентов (меньше ингредиентов = проще рецепт)
+    // сортируем по количеству ингредиентов (сначала простые)
     matchingRecipes.sort((a, b) => a.ingredientCount - b.ingredientCount);
     
     displayResults(matchingRecipes);

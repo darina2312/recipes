@@ -1,3 +1,4 @@
+// загружает рецепты с сервера и показывает их на странице
 async function loadRecipes(query = "") {
     const res = await fetch(`/api/recipes?q=${encodeURIComponent(query)}`);
     const recipes = await res.json();
@@ -7,19 +8,18 @@ async function loadRecipes(query = "") {
         container.innerHTML = "<p>Пока нет рецептов</p>";
         return;
     }
+    // создаём карточки для каждого рецепта
     for (const r of recipes) {
-    // создаём ссылку-карточку, которая ведёт на страницу рецепта
-    const card = document.createElement("a");
-    card.className = "card card-link";
-    card.href = `recipe.html?id=${r.id}`;   // переход на рецепт по id
-    card.innerHTML = `
-        <h3>${r.title}</h3>
-        <p>${r.description || ""}</p>
-        <small>${r.created_at}</small>
-    `;
-    container.appendChild(card);
+        const card = document.createElement("a");
+        card.className = "card card-link";
+        card.href = `recipe.html?id=${r.id}`;
+        card.innerHTML = `
+            <h3>${r.title}</h3>
+            <p>${r.description || ""}</p>
+            <small>${r.created_at}</small>
+        `;
+        container.appendChild(card);
     }
-
 }
 
 document.getElementById("searchBtn").onclick = () => {
@@ -27,6 +27,20 @@ document.getElementById("searchBtn").onclick = () => {
     loadRecipes(q);
 };
 
+// открывает случайный рецепт
+document.getElementById("randomBtn").onclick = async () => {
+    const res = await fetch('/api/recipes');
+    const recipes = await res.json();
+    if (recipes.length === 0) {
+        alert('Нет рецептов для выбора');
+        return;
+    }
+    // выбираем случайный рецепт
+    const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
+    window.location.href = `recipe.html?id=${randomRecipe.id}`;
+};
+
+// добавляет новую строку для ввода ингредиента
 function addIngredientRow() {
     const list = document.getElementById("ingredientsList");
     const row = document.createElement("div");
@@ -40,6 +54,7 @@ function addIngredientRow() {
     list.appendChild(row);
 }
 
+// очищает форму добавления рецепта
 function clearModal() {
     document.getElementById("titleInput").value = "";
     document.getElementById("descInput").value = "";
@@ -47,7 +62,7 @@ function clearModal() {
     document.getElementById("tagsInput").value = "";
     const list = document.getElementById("ingredientsList");
     list.innerHTML = "";
-    addIngredientRow(); // Добавляем одну пустую строку
+    addIngredientRow(); // оставляем одну пустую строку
 }
 
 document.getElementById("addBtn").onclick = () => {
@@ -58,7 +73,9 @@ document.getElementById("addBtn").onclick = () => {
 document.getElementById("cancelBtn").onclick = () =>
     document.getElementById("modal").classList.add("hidden");
 
+// сохраняет новый рецепт
 document.getElementById("saveBtn").onclick = async () => {
+    // собираем данные из формы
     const newRecipe = {
         title: document.getElementById("titleInput").value.trim(),
         description: document.getElementById("descInput").value.trim(),
@@ -71,6 +88,7 @@ document.getElementById("saveBtn").onclick = async () => {
         tags: document.getElementById("tagsInput").value.split(",").map(s => s.trim())
     };
 
+    // отправляем на сервер
     const res = await fetch("/api/recipes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,7 +98,7 @@ document.getElementById("saveBtn").onclick = async () => {
     if (res.ok) {
         document.getElementById("modal").classList.add("hidden");
         clearModal();
-        loadRecipes();
+        loadRecipes(); // обновляем список
     } else {
         alert("Ошибка при добавлении");
     }

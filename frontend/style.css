@@ -1,16 +1,16 @@
 body {
     font-family: system-ui, sans-serif;
     margin: 0;
-    background: #f7f7f7;
-    color: #333;
+    background: #F4F5F7; /* спокойный светло-серый фон без желтизны */
+    color: #3E3E40;      /* мягкий тёмно-серый текст */
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #4CAF50;
-    color: white;
+    background: #6D9580; /* мягкий мятный зелёный */
+    color: #FDFDFD;
     padding: 12px 20px;
 }
 
@@ -19,12 +19,27 @@ header {
     justify-content: center;
     gap: 8px;
     padding: 12px;
-    background: #fff;
+    background: #FFFFFF;
 }
 
 input, textarea, button {
     font-family: inherit;
     font-size: 14px;
+}
+
+input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid #D1D7D0; /* мягкая серая рамка */
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #3E3E40;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #8AB09A; /* мягкий мятный зелёный */
+    box-shadow: 0 0 0 3px rgba(138, 176, 154, 0.2);
 }
 
 #recipes {
@@ -35,26 +50,28 @@ input, textarea, button {
 }
 
 .card {
-    background: white;
+    background: #FFFFFF;
     padding: 12px;
     border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform .2s;
+    border: 1px solid #E0E3DD; /* более светлая, менее контрастная рамка */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: transform .15s ease, box-shadow .15s ease;
 }
 .card:hover {
-    transform: scale(1.02);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
 }
 
 button {
-    background: #4CAF50;
-    color: white;
+    background: #7FA892; /* мягкий мятный зелёный */
+    color: #FDFDFD;
     border: none;
     padding: 6px 12px;
     border-radius: 8px;
     cursor: pointer;
 }
 button:hover {
-    background: #43A047;
+    background: #6A8F7C; /* чуть темнее, но всё ещё мятный */
 }
 
 /* Модалка */
@@ -62,58 +79,61 @@ button:hover {
 #modal {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(10, 14, 12, 0.35); /* более мягкий тёмный слой */
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
 .modal-content {
-    background: white;
+    background: #FEFEFE;
     padding: 24px;
     border-radius: 16px;
     width: 500px;
     max-width: 90vw;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    border: 1px solid #D1D7D0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.14);
 }
 .modal-content h2 {
     margin-top: 0;
     margin-bottom: 20px;
-    color: #333;
+    color: #3E3E40;
 }
 .modal-content label {
     display: block;
     margin-top: 16px;
     margin-bottom: 6px;
     font-weight: 500;
-    color: #555;
+    color: #58645C;
     font-size: 14px;
 }
 .modal-content label:first-of-type {
     margin-top: 0;
 }
 .modal-content .required {
-    color: #e74c3c;
+    color: #8B4513;
 }
 .modal-content input[type="text"],
 .modal-content input[type="number"],
 .modal-content textarea {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #D1D7D0;
     border-radius: 8px;
     font-size: 14px;
     box-sizing: border-box;
     transition: border-color 0.2s;
+    background: #FFFFFF;
+    color: #3E3E40;
 }
 .modal-content input[type="text"]:focus,
 .modal-content input[type="number"]:focus,
 .modal-content textarea:focus {
     outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    border-color: #8AB09A; /* мягкий мятный зелёный */
+    box-shadow: 0 0 0 3px rgba(138, 176, 154, 0.2);
 }
 .modal-content textarea {
     resize: vertical;
@@ -129,18 +149,20 @@ button:hover {
 .ingredient-row input {
     width: 100%;
     padding: 8px 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #D1D7D0;
     border-radius: 6px;
     font-size: 14px;
     box-sizing: border-box;
+    background: #FFFFFF;
+    color: #3E3E40;
 }
 .ingredient-row input:focus {
     outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+    border-color: #8AB09A; /* мягкий мятный зелёный */
+    box-shadow: 0 0 0 2px rgba(138, 176, 154, 0.18);
 }
 .remove-ingredient {
-    background: #f44336;
+    background: #C56A6A; /* смягчённый красный для удаления */
     color: white;
     border: none;
     width: 32px;
@@ -156,11 +178,11 @@ button:hover {
     transition: background 0.2s;
 }
 .remove-ingredient:hover {
-    background: #d32f2f;
+    background: #AD5959;
 }
 .add-ingredient-btn {
     margin-top: 8px;
-    background: #2196F3;
+    background: #9BBFA9; /* мягкий мятный зелёный */
     color: white;
     border: none;
     padding: 8px 16px;
@@ -170,7 +192,7 @@ button:hover {
     transition: background 0.2s;
 }
 .add-ingredient-btn:hover {
-    background: #1976D2;
+    background: #87AB95; /* чуть темнее мятный */
 }
 .actions {
     display: flex;
@@ -178,7 +200,7 @@ button:hover {
     gap: 10px;
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #D1D7D0;
 }
 .actions button {
     padding: 10px 20px;
@@ -189,20 +211,20 @@ button:hover {
     transition: all 0.2s;
 }
 #saveBtn {
-    background: #4CAF50;
-    color: white;
+    background: #7FA892; /* мягкий мятный зелёный */
+    color: #FDFDFD;
     border: none;
 }
 #saveBtn:hover {
-    background: #43A047;
+    background: #6A8F7C; /* чуть темнее мятный */
 }
 #cancelBtn {
-    background: #f5f5f5;
-    color: #333;
-    border: 1px solid #ddd;
+    background: #E3E8E1;
+    color: #3E3E40;
+    border: 1px solid #D1D7D0;
 }
 #cancelBtn:hover {
-    background: #e0e0e0;
+    background: #D5DBD3;
 }
 .card-link {
   display: block;
