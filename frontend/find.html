@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Подбор рецептов по ингредиентам</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .find-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .find-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .find-header h1 {
+            margin: 0;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .controls button {
+            padding: 10px 20px;
+        }
+        .ingredients-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+        .ingredient-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .ingredient-checkbox:hover {
+            background: #f5f5f5;
+        }
+        .ingredient-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .ingredient-checkbox label {
+            cursor: pointer;
+            flex: 1;
+            margin: 0;
+            font-size: 14px;
+        }
+        .results-section {
+            margin-top: 24px;
+        }
+        .results-header {
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .search-info {
+            margin-bottom: 12px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔍 Подбор рецептов</h1>
+    </header>
+
+    <div class="find-container">
+        <a href="/" class="back-link">← Назад к списку рецептов</a>
+
+        <div class="find-header">
+            <h2>Выберите имеющиеся ингредиенты</h2>
+        </div>
+
+        <div class="controls">
+            <button id="selectAllBtn">Выбрать все</button>
+            <button id="deselectAllBtn">Снять все</button>
+            <button id="findBtn" style="background: #2196F3;">Найти рецепты</button>
+        </div>
+
+        <div class="ingredients-section">
+            <div class="search-info">
+                <input type="text" id="ingredientSearch" placeholder="Поиск ингредиента..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+            </div>
+            <div id="ingredientsList" class="ingredients-grid">
+                <p>Загрузка ингредиентов...</p>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header" id="resultsHeader" style="display: none;">
+                Найденные рецепты:
+            </div>
+            <div id="results" class="recipes-grid"></div>
+        </div>
+    </div>
+
+    <script src="find.js"></script>
+</body>
+</html>
+

@@ -20,6 +20,10 @@ def save_data(data):
 def index():
     return send_from_directory(app.static_folder, "index.html")
 
+@app.route("/find.html")
+def find():
+    return send_from_directory(app.static_folder, "find.html")
+
 @app.route("/api/recipes", methods=["GET"])
 def get_recipes():
     """Возвращает все рецепты или ищет по запросу"""
