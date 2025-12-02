@@ -1,8 +1,11 @@
 #!/bin/bash
 echo "Запуск приложения 'Мои рецепты'..."
 echo ""
-cd backend
-xdg-open http://localhost:5000 2>/dev/null || open http://localhost:5000 2>/dev/null || start http://localhost:5000 2>/dev/null
+
+cd backend || exit 1
+
+
+(sleep 1 && open "http://127.0.0.1:5001/") &
+
+
 python3 app.py
-
-
