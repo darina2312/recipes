@@ -109,6 +109,7 @@ function displayResults(matchingRecipes) {
     
     if (matchingRecipes.length === 0) {
         resultsHeader.style.display = 'none';
+        resultsContainer.className = 'recipes-grid no-results-container';
         resultsContainer.innerHTML = '<div class="no-results"><p>Не найдено рецептов, которые можно приготовить из выбранных ингредиентов.</p><p>Попробуйте выбрать больше ингредиентов.</p></div>';
         return;
     }
@@ -123,7 +124,9 @@ function displayResults(matchingRecipes) {
         const card = document.createElement('a');
         card.className = 'card card-link';
         card.href = `recipe.html?id=${recipe.id}`;
+        const imageHtml = recipe.image ? `<img src="${recipe.image}" alt="${recipe.title}" class="recipe-thumbnail">` : '';
         card.innerHTML = `
+            ${imageHtml}
             <h3>${recipe.title}</h3>
             <p>${recipe.description || ''}</p>
             <small>${recipe.created_at || ''}</small>
